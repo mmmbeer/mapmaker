@@ -107,10 +107,13 @@ function drawRoads(ctx, scene) {
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(road.points[0].x, road.points[0].y);
-    ctx.lineTo(road.points[1].x, road.points[1].y);
+    for (let i = 1; i < road.points.length; i++) {
+      ctx.lineTo(road.points[i].x, road.points[i].y);
+    }
     ctx.strokeStyle = styles.roads.fill;
     ctx.lineWidth = road.width;
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.stroke();
     ctx.strokeStyle = styles.roads.stroke;
     ctx.lineWidth = 1;

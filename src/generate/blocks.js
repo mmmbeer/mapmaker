@@ -25,13 +25,16 @@ export function generateBlocks(rng, params, roadDrawData, canvasSize) {
   ctx.translate(w / 2, h / 2);
   ctx.strokeStyle = "white";
   ctx.lineCap = "round";
+  ctx.lineJoin = "round";
 
   for (const road of roadDrawData) {
     const margin = 6;
     ctx.lineWidth = road.width + margin;
     ctx.beginPath();
     ctx.moveTo(road.points[0].x, road.points[0].y);
-    ctx.lineTo(road.points[1].x, road.points[1].y);
+    for (let i = 1; i < road.points.length; i++) {
+      ctx.lineTo(road.points[i].x, road.points[i].y);
+    }
     ctx.stroke();
   }
   ctx.restore();

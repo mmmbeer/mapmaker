@@ -118,23 +118,86 @@ export function generateRoadGraph(rng, params) {
 
 export function roadsToDrawData(graph) {
   const nodeMap = new Map(graph.nodes.map((n) => [n.id, n]));
-  return graph.edges.map((e) => {
-    const a = nodeMap.get(e.a);
-    const b = nodeMap.get(e.b);
-    return { kind: e.kind, width: e.width, points: [a, b] };
-  });
+  const edges = graph.edges.map((e, idx) => ({ ...e, idx }));
+  const adjacency = new Map();
+
+  function groupKey(edge) {
+    return `${edge.kind}|${edge.width.toFixed(3)}`;
+  }
+
+  function addAdj(nodeId, edge) {
+    if (!adjacency.has(nodeId)) adjacency.set(nodeId, new Map());
+    const groups = adjacency.get(nodeId);
+    const key = groupKey(edge);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(edge.idx);
+  }
+
+  for (const edge of edges) {
+    addAdj(edge.a, edge);
+    addAdj(edge.b, edge);
+  }
+
+  function degree(nodeId, key) {
+    return adjacency.get(nodeId)?.get(key)?.length || 0;
+  }
+
+  function otherEnd(edge, nodeId) {
+    return edge.a === nodeId ? edge.b : edge.a;
+  }
+
+  const visited = new Array(edges.length).fill(false);
+  const polylines = [];
+
+  for (const edge of edges) {
+    if (visited[edge.idx]) continue;
+    const key = groupKey(edge);
+    const degA = degree(edge.a, key);
+    const degB = degree(edge.b, key);
+    const startNode = degA !== 2 ? edge.a : (degB !== 2 ? edge.b : edge.a);
+
+    const points = [];
+    let currentNode = startNode;
+    let currentEdge = edge;
+    points.push(nodeMap.get(currentNode));
+
+    for (let guard = 0; guard < edges.length + 2; guard++) {
+      visited[currentEdge.idx] = true;
+      const nextNode = otherEnd(currentEdge, currentNode);
+      points.push(nodeMap.get(nextNode));
+
+      const nextEdges = adjacency.get(nextNode)?.get(key) || [];
+      const unvisited = [];
+      for (const idx of nextEdges) {
+        if (!visited[idx]) unvisited.push(idx);
+      }
+      if (unvisited.length !== 1) break;
+      currentNode = nextNode;
+      currentEdge = edges[unvisited[0]];
+      if (currentNode === startNode) break;
+    }
+
+    if (points.length >= 2) {
+      polylines.push({ kind: edge.kind, width: edge.width, points });
+    }
+  }
+
+  return polylines;
 }
 
 export function closestEdge(point, polylines) {
   let best = null;
   let bestDist = Infinity;
   for (const line of polylines) {
-    const a = line.points[0];
-    const b = line.points[1];
-    const res = distancePointToSegment(point, a, b);
-    if (res.dist < bestDist) {
-      bestDist = res.dist;
-      best = { line, point: res.point, dist: res.dist, angle: Math.atan2(b.y - a.y, b.x - a.x) };
+    const pts = line.points;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1];
+      const b = pts[i];
+      const res = distancePointToSegment(point, a, b);
+      if (res.dist < bestDist) {
+        bestDist = res.dist;
+        best = { line, point: res.point, dist: res.dist, angle: Math.atan2(b.y - a.y, b.x - a.x) };
+      }
     }
   }
   return best;
