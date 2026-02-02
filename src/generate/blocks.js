@@ -123,6 +123,13 @@ export function generateBlocks(rng, params, roadDrawData, canvasSize) {
     blocks.push({ id, poly: simplified, area, bbox: polyBounds(simplified) });
   }
 
+  if (!blocks.length) {
+    const fallback = circlePoly(params.townRadius * 0.92, 48);
+    const area = Math.abs(polyArea(fallback));
+    const id = stableId("block_", params.seed, `fallback:${Math.round(area)}`);
+    blocks.push({ id, poly: fallback, area, bbox: polyBounds(fallback) });
+  }
+
   return blocks;
 }
 
@@ -230,4 +237,13 @@ function traceContour(labels, w, h, comp) {
   }
 
   return contour.length >= 4 ? contour : null;
+}
+
+function circlePoly(r, steps) {
+  const pts = [];
+  for (let i = 0; i < steps; i++) {
+    const ang = (i / steps) * Math.PI * 2;
+    pts.push({ x: Math.cos(ang) * r, y: Math.sin(ang) * r });
+  }
+  return pts;
 }

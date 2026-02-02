@@ -5,6 +5,7 @@ export function generateRoadGraph(rng, params) {
   const edges = [];
   let nodeId = 1;
   let edgeId = 1;
+  const ringNodeIds = [];
 
   function addNode(x, y) {
     const id = `n${nodeId++}`;
@@ -56,6 +57,7 @@ export function generateRoadGraph(rng, params) {
       const x = Math.cos(ang) * r + (rng() - 0.5) * 3;
       const y = Math.sin(ang) * r + (rng() - 0.5) * 3;
       const id = addNode(x, y);
+      ringNodeIds.push(id);
       if (s === 0) firstId = id;
       if (prevId) addEdge(prevId, id, "ring", width);
       prevId = id;
@@ -86,6 +88,28 @@ export function generateRoadGraph(rng, params) {
       };
       const bendId = addNode(bend.x, bend.y);
       addEdge(endId, bendId, "minor", Math.max(2, params.roadWidth * 0.65));
+    }
+  }
+
+  // Light snapping/connection pass so rings and spines feel connected
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+  if (ringNodeIds.length) {
+    const connectDist = Math.max(18, params.roadWidth * 2.5);
+    for (const ringId of ringNodeIds) {
+      const rNode = nodeMap.get(ringId);
+      let best = null;
+      let bestDist = Infinity;
+      for (const n of nodes) {
+        if (n.id === ringId) continue;
+        const d = distance(rNode, n);
+        if (d < bestDist) {
+          bestDist = d;
+          best = n;
+        }
+      }
+      if (best && bestDist < connectDist) {
+        addEdge(ringId, best.id, "minor", Math.max(2, params.roadWidth * 0.65));
+      }
     }
   }
 

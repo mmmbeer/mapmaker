@@ -28,7 +28,10 @@ export function generateBuildings(rng, params, parcels, roadDrawData) {
       h *= 0.82;
       footprint = rectPoly(centroid.x, centroid.y, w, h, angle);
     }
-    if (!polyInside(footprint, parcel.poly)) continue;
+    if (!polyInside(footprint, parcel.poly)) {
+      // Fallback: accept if centroid is inside (keeps some buildings even on jagged parcels)
+      if (!pointInPoly(centroid, parcel.poly)) continue;
+    }
 
     const bBounds = polyBounds(footprint);
     const candidates = grid.query(bBounds);

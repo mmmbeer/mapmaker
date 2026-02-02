@@ -122,12 +122,12 @@ building = {
 
 ## Development phases & deliverables
 
-### Phase 1 — Refactor & IO (short)
+### Phase 1 — Refactor & IO (short) (COMPLETED)
 
 **Goal:** Make the codebase safe to extend.
-Deliverables:
+Deliverables (done):
 
-1. Refactor into `/src` modules or at minimum clean file sections:
+1. Refactor into `/src` modules:
    * RNG
    * geometry
    * generation
@@ -141,13 +141,13 @@ Deliverables:
 3. Add `scene.version` and migration placeholder:
    * `migrateScene(scene)` that upgrades older versions.
 
-Acceptance:
+Acceptance (verified manually):
 
 * Export JSON then import it reproduces identical PNG (within anti-alias tolerance).
 
 ---
 
-### Phase 2 — Road graph (core)
+### Phase 2 — Road graph (core) (COMPLETED)
 
 **Goal:** Replace “radial polyline list” with a small **road graph** model that can support block extraction.
 
@@ -160,7 +160,7 @@ graph = {
 }
 ```
 
-Deliverables:
+Deliverables (done):
 
 1. Generate a graph that resembles:
    * a few main spines,
@@ -170,14 +170,14 @@ Deliverables:
 2. Convert graph edges to drawable polylines.
 3. Keep deterministic output.
 
-Acceptance:
+Acceptance (verified manually):
 
 * A seed generates consistent graph nodes/edges.
 * Roads draw with hierarchy and intersections look clean.
 
 ---
 
-### Phase 3 — Block extraction (hard, high value)
+### Phase 3 — Block extraction (hard, high value) (COMPLETED)
 
 **Goal:** Compute **block polygons** from the road network.
 
@@ -196,23 +196,23 @@ Approach options (pick one, implement well):
    * Convert contours to polygons and simplify (RDP).
    * This can work surprisingly well for fantasy style.
 
-Deliverables:
+Deliverables (done):
 
 * `blocks = [{id, poly:[...], area, bbox}]`
 * Filter blocks by area range and inside town boundary.
 
-Acceptance:
+Acceptance (verified manually):
 
 * Blocks exist and are visually plausible.
 * Blocks are stable with a seed.
 
 ---
 
-### Phase 4 — Parcel subdivision
+### Phase 4 — Parcel subdivision (COMPLETED)
 
 **Goal:** Split blocks into parcels and place buildings aligned to parcel edges.
 
-Deliverables:
+Deliverables (done):
 
 1. For each block polygon:
    * Simplify polygon
@@ -226,18 +226,18 @@ Deliverables:
    * Most buildings should align to a parcel edge facing the nearest road.
    * Use setbacks and avoid overlaps.
 
-Acceptance:
+Acceptance (verified manually):
 
 * Buildings appear in rows along streets.
 * Dense core uses smaller parcels, outskirts larger.
 
 ---
 
-### Phase 5 — Editing tools (selection is already there)
+### Phase 5 — Editing tools (selection is already there) (IN PROGRESS)
 
 **Goal:** Turn this into a usable map editor.
 
-Deliverables:
+Deliverables (next):
 
 1. Pan/zoom (mouse wheel zoom, drag pan).
 2. Building editing:
