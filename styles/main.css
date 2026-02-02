@@ -60,13 +60,22 @@ body{
   color: #cbd5e1;
 }
 .row input[type="text"],
-.row input[type="number"]{
+.row input[type="number"],
+.row select{
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
   color: var(--text);
   padding: 8px 10px;
   border-radius: 10px;
   outline: none;
+}
+.row input[type="color"]{
+  width: 100%;
+  height: 36px;
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
 }
 .row input[type="range"]{
   width: 100%;
@@ -114,6 +123,22 @@ button:disabled{
   min-height: 70px;
   white-space: pre-wrap;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.selection-editor{
+  display: none;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.warning{
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(248, 196, 80, 0.45);
+  background: rgba(248, 196, 80, 0.12);
+  color: #fbbf24;
   font-size: 12px;
 }
 

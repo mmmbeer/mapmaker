@@ -16,17 +16,21 @@ export function render(scene, ctx, view, debug) {
     return;
   }
 
-  drawFields(ctx, scene.layers.decor.fields);
+  const visibility = scene.ui?.layerVisibility || {};
+
+  if (visibility.fields !== false) drawFields(ctx, scene.layers.decor.fields);
   drawWater(ctx, scene.layers.decor.water);
   drawTownHalo(ctx, scene.params.townRadius);
-  drawTrees(ctx, scene.layers.decor.trees);
+  if (visibility.trees !== false) drawTrees(ctx, scene.layers.decor.trees);
 
-  drawRoads(ctx, scene);
+  if (visibility.roads !== false) drawRoads(ctx, scene);
 
   if (debug?.showBlocks) drawPolys(ctx, scene.layers.blocks.items, styles.debug.blocks);
   if (debug?.showParcels) drawPolys(ctx, scene.layers.parcels.items, styles.debug.parcels);
 
-  drawBuildings(ctx, scene.layers.buildings.items, scene.selection.buildingId);
+  if (visibility.buildings !== false) {
+    drawBuildings(ctx, scene.layers.buildings.items, scene.selection.buildingIds);
+  }
 
   ctx.restore();
 }
@@ -115,7 +119,8 @@ function drawRoads(ctx, scene) {
   }
 }
 
-function drawBuildings(ctx, buildings, selectedId) {
+function drawBuildings(ctx, buildings, selectedIds) {
+  const selected = new Set(selectedIds || []);
   for (const b of buildings) {
     ctx.save();
     ctx.fillStyle = b.style.fill;
@@ -124,7 +129,7 @@ function drawBuildings(ctx, buildings, selectedId) {
     ctx.fill(b.path);
     ctx.stroke(b.path);
 
-    if (b.id === selectedId) {
+    if (selected.has(b.id)) {
       ctx.strokeStyle = styles.buildings.selection;
       ctx.lineWidth = 2.5;
       ctx.stroke(b.path);

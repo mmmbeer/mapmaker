@@ -1,4 +1,4 @@
-export const SCENE_VERSION = 2;
+export const SCENE_VERSION = 3;
 
 export function defaultParams() {
   return {
@@ -17,6 +17,14 @@ export function createScene(params) {
   return {
     version: SCENE_VERSION,
     params: { ...params },
+    ui: {
+      layerVisibility: {
+        roads: true,
+        trees: true,
+        fields: true,
+        buildings: true
+      }
+    },
     layers: {
       roads: { graph: null, polylines: [] },
       blocks: { items: [] },
@@ -24,6 +32,6 @@ export function createScene(params) {
       buildings: { items: [] },
       decor: { fields: [], trees: [], water: null, townBoundary: null }
     },
-    selection: { buildingId: null }
+    selection: { buildingIds: [] }
   };
 }

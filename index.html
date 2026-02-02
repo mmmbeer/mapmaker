@@ -74,6 +74,16 @@
       </section>
 
       <section class="panel__section">
+        <h2>Layers</h2>
+        <div class="row">
+          <label><input id="layerRoads" type="checkbox" checked /> Roads</label>
+          <label><input id="layerTrees" type="checkbox" checked /> Trees</label>
+          <label><input id="layerFields" type="checkbox" checked /> Fields</label>
+          <label><input id="layerBuildings" type="checkbox" checked /> Buildings</label>
+        </div>
+      </section>
+
+      <section class="panel__section">
         <h2>Export</h2>
         <div class="row buttons">
           <button id="exportJson">Export JSON</button>
@@ -81,11 +91,31 @@
           <button id="exportPng">Export PNG</button>
         </div>
         <input id="importFile" type="file" accept="application/json" hidden />
+        <div id="importWarning" class="warning" style="display:none;"></div>
       </section>
 
       <section class="panel__section">
         <h2>Selection</h2>
         <div id="selection" class="selection muted">Click a building…</div>
+        <div id="selectionEditor" class="selection-editor">
+          <div class="row">
+            <label>Kind</label>
+            <select id="selectionKind">
+              <option value="home">home</option>
+              <option value="shop">shop</option>
+              <option value="civic">civic</option>
+              <option value="landmark">landmark</option>
+            </select>
+          </div>
+          <div class="row">
+            <label>Levels</label>
+            <input id="selectionLevels" type="number" min="1" max="10" value="1" />
+          </div>
+          <div class="row">
+            <label>Fill</label>
+            <input id="selectionFill" type="color" value="#6c4a3a" />
+          </div>
+        </div>
         <div class="row buttons">
           <button id="randomizeSelected" disabled>Randomize color</button>
           <button id="deleteSelected" disabled>Delete</button>

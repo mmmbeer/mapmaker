@@ -6,6 +6,7 @@ export function exportSceneToJson(scene) {
   const payload = {
     version: SCENE_VERSION,
     params: scene.params,
+    ui: scene.ui,
     roads: { graph: scene.layers.roads.graph },
     blocks: scene.layers.blocks.items,
     parcels: scene.layers.parcels.items,
@@ -30,6 +31,7 @@ export function importSceneFromJson(jsonText) {
   if (version < SCENE_VERSION) return migrateScene(raw, version);
 
   const scene = createScene(raw.params);
+  scene.ui = raw.ui || scene.ui;
   scene.layers.roads = raw.roads || { graph: null, polylines: [] };
   if (scene.layers.roads.graph && (!scene.layers.roads.polylines || !scene.layers.roads.polylines.length)) {
     scene.layers.roads.polylines = roadsToDrawData(scene.layers.roads.graph);
@@ -46,13 +48,38 @@ export function importSceneFromJson(jsonText) {
     }))
   };
   scene.layers.decor = raw.decor || { fields: [], trees: [], water: null, townBoundary: null };
-  scene.selection = raw.selection || { buildingId: null };
+  scene.selection = normalizeSelection(raw.selection);
   return scene;
 }
 
 function migrateScene(raw, version) {
-  if (version !== 1) throw new Error("Unsupported legacy version");
+  if (version !== 1 && version !== 2) throw new Error("Unsupported legacy version");
+  if (version === 2) {
+    const scene = createScene(raw.params || {});
+    scene.ui = raw.ui || scene.ui;
+    scene.layers.roads = raw.roads || { graph: null, polylines: [] };
+    if (scene.layers.roads.graph && (!scene.layers.roads.polylines || !scene.layers.roads.polylines.length)) {
+      scene.layers.roads.polylines = roadsToDrawData(scene.layers.roads.graph);
+    }
+    scene.layers.blocks = { items: raw.blocks || [] };
+    scene.layers.parcels = { items: raw.parcels || [] };
+    scene.layers.buildings = {
+      items: (raw.buildings || []).map((b) => ({
+        id: b.id,
+        footprint: b.footprint,
+        bbox: b.bbox || polyBounds(b.footprint),
+        style: b.style,
+        meta: b.meta
+      }))
+    };
+    scene.layers.decor = raw.decor || { fields: [], trees: [], water: null, townBoundary: null };
+    scene.selection = normalizeSelection(raw.selection);
+    scene.version = SCENE_VERSION;
+    return scene;
+  }
+
   const scene = createScene(raw.params || {});
+  scene.ui = raw.ui || scene.ui;
   scene.layers.decor = raw.decor || { fields: [], trees: [], water: null, townBoundary: null };
   scene.layers.roads = {
     graph: null,
@@ -73,7 +100,17 @@ function migrateScene(raw, version) {
       meta: b.meta || { kind: "home", levels: 1 }
     }))
   };
-  scene.selection = raw.selection || { buildingId: null };
+  scene.selection = normalizeSelection(raw.selection);
   scene.version = SCENE_VERSION;
   return scene;
+}
+
+function normalizeSelection(selection) {
+  if (selection && Array.isArray(selection.buildingIds)) {
+    return { buildingIds: selection.buildingIds.slice() };
+  }
+  if (selection && selection.buildingId) {
+    return { buildingIds: [selection.buildingId] };
+  }
+  return { buildingIds: [] };
 }
