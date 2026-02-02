@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fantasy Town Generator (Canvas)</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <header class="panel__header">
+        <h1>Town Generator</h1>
+        <p class="muted">Canvas • selectable buildings • export JSON/PNG</p>
+      </header>
+
+      <section class="panel__section">
+        <h2>Generation</h2>
+
+        <div class="row">
+          <label>Seed</label>
+          <input id="seed" type="text" value="winack" />
+        </div>
+
+        <div class="row">
+          <label>Town radius</label>
+          <input id="townRadius" type="range" min="220" max="620" value="420" />
+          <span id="townRadiusVal" class="val"></span>
+        </div>
+
+        <div class="row">
+          <label>Main roads</label>
+          <input id="mainRoads" type="range" min="5" max="14" value="9" />
+          <span id="mainRoadsVal" class="val"></span>
+        </div>
+
+        <div class="row">
+          <label>Ring roads</label>
+          <input id="ringRoads" type="range" min="0" max="3" value="2" />
+          <span id="ringRoadsVal" class="val"></span>
+        </div>
+
+        <div class="row">
+          <label>Building density</label>
+          <input id="density" type="range" min="0.3" max="2.5" step="0.05" value="1.2" />
+          <span id="densityVal" class="val"></span>
+        </div>
+
+        <div class="row">
+          <label>Building size</label>
+          <div class="inline2">
+            <input id="bMin" type="number" min="6" max="40" value="10" />
+            <input id="bMax" type="number" min="8" max="70" value="26" />
+          </div>
+          <small class="muted">min / max edge length (px)</small>
+        </div>
+
+        <div class="row">
+          <label>Road width</label>
+          <input id="roadWidth" type="range" min="3" max="18" value="8" />
+          <span id="roadWidthVal" class="val"></span>
+        </div>
+
+        <div class="row buttons">
+          <button id="regen">Regenerate</button>
+          <button id="resetView">Reset view</button>
+        </div>
+      </section>
+
+      <section class="panel__section">
+        <h2>Export</h2>
+        <div class="row buttons">
+          <button id="exportJson">Export JSON</button>
+          <button id="exportPng">Export PNG</button>
+        </div>
+      </section>
+
+      <section class="panel__section">
+        <h2>Selection</h2>
+        <div id="selection" class="selection muted">Click a building…</div>
+        <div class="row buttons">
+          <button id="randomizeSelected" disabled>Randomize color</button>
+          <button id="deleteSelected" disabled>Delete</button>
+        </div>
+        <small class="muted">
+          Tip: this is where you’d add “building type”, “district”, “name”, “levels”, etc.
+        </small>
+      </section>
+
+      <footer class="panel__footer muted">
+        <div>Buildings: <span id="buildingCount">0</span></div>
+        <div>Seeded + deterministic</div>
+      </footer>
+    </aside>
+
+    <main class="stage">
+      <canvas id="c"></canvas>
+      <div class="hint">Click buildings to select • Export JSON/PNG</div>
+    </main>
+  </div>
+
+  <script src="scripts/app.js"></script>
+</body>
+</html>
