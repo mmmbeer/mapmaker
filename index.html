@@ -65,14 +65,22 @@
           <button id="regen">Regenerate</button>
           <button id="resetView">Reset view</button>
         </div>
+
+        <div class="row">
+          <label>Debug</label>
+          <label><input id="showBlocks" type="checkbox" /> Show blocks</label>
+          <label><input id="showParcels" type="checkbox" /> Show parcels</label>
+        </div>
       </section>
 
       <section class="panel__section">
         <h2>Export</h2>
         <div class="row buttons">
           <button id="exportJson">Export JSON</button>
+          <button id="importJson">Import JSON</button>
           <button id="exportPng">Export PNG</button>
         </div>
+        <input id="importFile" type="file" accept="application/json" hidden />
       </section>
 
       <section class="panel__section">
@@ -99,6 +107,6 @@
     </main>
   </div>
 
-  <script src="scripts/app.js"></script>
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>
